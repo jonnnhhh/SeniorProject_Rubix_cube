@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="TestBench_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="TestBench" />
+            <top_module name="glbl" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="244475000fs"></ZoomStartTime>
+      <ZoomEndTime time="250985001fs"></ZoomEndTime>
+      <Cursor1Time time="130400000fs"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="225"></NameColumnWidth>
+      <ValueColumnWidth column_width="64"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="13" />
+   <wvobject fp_name="group25" type="group">
+      <obj_property name="label">Fundamentals</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/TestBench/I_sys_clk_tb" type="logic">
+         <obj_property name="ElementShortName">I_sys_clk_tb</obj_property>
+         <obj_property name="ObjectShortName">I_sys_clk_tb</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/I_rst_button_tb" type="logic">
+         <obj_property name="ElementShortName">I_rst_button_tb</obj_property>
+         <obj_property name="ObjectShortName">I_rst_button_tb</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/I_start_button_tb" type="logic">
+         <obj_property name="ElementShortName">I_start_button_tb</obj_property>
+         <obj_property name="ObjectShortName">I_start_button_tb</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/o_servo1_directional_output_tb" type="logic">
+         <obj_property name="ElementShortName">o_servo1_directional_output_tb</obj_property>
+         <obj_property name="ObjectShortName">o_servo1_directional_output_tb</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/o_servo2_directional_output_tb" type="logic">
+         <obj_property name="ElementShortName">o_servo2_directional_output_tb</obj_property>
+         <obj_property name="ObjectShortName">o_servo2_directional_output_tb</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/o_servo3_directional_output_tb" type="logic">
+         <obj_property name="ElementShortName">o_servo3_directional_output_tb</obj_property>
+         <obj_property name="ObjectShortName">o_servo3_directional_output_tb</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/o_servo1_gripping_output_tb" type="logic">
+         <obj_property name="ElementShortName">o_servo1_gripping_output_tb</obj_property>
+         <obj_property name="ObjectShortName">o_servo1_gripping_output_tb</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/o_servo2_gripping_output_tb" type="logic">
+         <obj_property name="ElementShortName">o_servo2_gripping_output_tb</obj_property>
+         <obj_property name="ObjectShortName">o_servo2_gripping_output_tb</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/o_servo3_gripping_output_tb" type="logic">
+         <obj_property name="ElementShortName">o_servo3_gripping_output_tb</obj_property>
+         <obj_property name="ObjectShortName">o_servo3_gripping_output_tb</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group95" type="group">
+      <obj_property name="label">scanner_movement_done(s)</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/TestBench/uut/M3/direction1_movement_done" type="logic">
+         <obj_property name="ElementShortName">direction1_movement_done</obj_property>
+         <obj_property name="ObjectShortName">direction1_movement_done</obj_property>
+         <obj_property name="CustomSignalColor">#808000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/M3/direction2_movement_done" type="logic">
+         <obj_property name="ElementShortName">direction2_movement_done</obj_property>
+         <obj_property name="ObjectShortName">direction2_movement_done</obj_property>
+         <obj_property name="CustomSignalColor">#808000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/M3/direction3_movement_done" type="logic">
+         <obj_property name="ElementShortName">direction3_movement_done</obj_property>
+         <obj_property name="ObjectShortName">direction3_movement_done</obj_property>
+         <obj_property name="CustomSignalColor">#808000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/M3/gripping1_movement_done" type="logic">
+         <obj_property name="ElementShortName">gripping1_movement_done</obj_property>
+         <obj_property name="ObjectShortName">gripping1_movement_done</obj_property>
+         <obj_property name="CustomSignalColor">#808000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/M3/gripping2_movement_done" type="logic">
+         <obj_property name="ElementShortName">gripping2_movement_done</obj_property>
+         <obj_property name="ObjectShortName">gripping2_movement_done</obj_property>
+         <obj_property name="CustomSignalColor">#808000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/M3/gripping3_movement_done" type="logic">
+         <obj_property name="ElementShortName">gripping3_movement_done</obj_property>
+         <obj_property name="ObjectShortName">gripping3_movement_done</obj_property>
+         <obj_property name="CustomSignalColor">#808000</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group76" type="group">
+      <obj_property name="label">scanner_keys</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/TestBench/uut/M3/key" type="logic">
+         <obj_property name="ElementShortName">key</obj_property>
+         <obj_property name="ObjectShortName">key</obj_property>
+         <obj_property name="CustomSignalColor">#FAAFBE</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/M3/key1" type="logic">
+         <obj_property name="ElementShortName">key1</obj_property>
+         <obj_property name="ObjectShortName">key1</obj_property>
+         <obj_property name="CustomSignalColor">#FAAFBE</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/M3/key2" type="logic">
+         <obj_property name="ElementShortName">key2</obj_property>
+         <obj_property name="ObjectShortName">key2</obj_property>
+         <obj_property name="CustomSignalColor">#FAAFBE</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/M3/key3" type="logic">
+         <obj_property name="ElementShortName">key3</obj_property>
+         <obj_property name="ObjectShortName">key3</obj_property>
+         <obj_property name="CustomSignalColor">#FAAFBE</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/M3/key4" type="logic">
+         <obj_property name="ElementShortName">key4</obj_property>
+         <obj_property name="ObjectShortName">key4</obj_property>
+         <obj_property name="CustomSignalColor">#FAAFBE</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/M3/key5" type="logic">
+         <obj_property name="ElementShortName">key5</obj_property>
+         <obj_property name="ObjectShortName">key5</obj_property>
+         <obj_property name="CustomSignalColor">#FAAFBE</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/M3/key6" type="logic">
+         <obj_property name="ElementShortName">key6</obj_property>
+         <obj_property name="ObjectShortName">key6</obj_property>
+         <obj_property name="CustomSignalColor">#FAAFBE</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/M3/key7" type="logic">
+         <obj_property name="ElementShortName">key7</obj_property>
+         <obj_property name="ObjectShortName">key7</obj_property>
+         <obj_property name="CustomSignalColor">#FAAFBE</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/M3/key8" type="logic">
+         <obj_property name="ElementShortName">key8</obj_property>
+         <obj_property name="ObjectShortName">key8</obj_property>
+         <obj_property name="CustomSignalColor">#FAAFBE</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/M3/key9" type="logic">
+         <obj_property name="ElementShortName">key9</obj_property>
+         <obj_property name="ObjectShortName">key9</obj_property>
+         <obj_property name="CustomSignalColor">#FAAFBE</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/M3/key10" type="logic">
+         <obj_property name="ElementShortName">key10</obj_property>
+         <obj_property name="ObjectShortName">key10</obj_property>
+         <obj_property name="CustomSignalColor">#FAAFBE</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/M3/key11" type="logic">
+         <obj_property name="ElementShortName">key11</obj_property>
+         <obj_property name="ObjectShortName">key11</obj_property>
+         <obj_property name="CustomSignalColor">#FAAFBE</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="/TestBench/uut/M3/cube_current_position" type="array">
+      <obj_property name="ElementShortName">cube_current_position[7:0]</obj_property>
+      <obj_property name="ObjectShortName">cube_current_position[7:0]</obj_property>
+      <obj_property name="Radix">BINARYRADIX</obj_property>
+      <obj_property name="CustomSignalColor">#FFA500</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="group59" type="group">
+      <obj_property name="label">counters &amp; pwm outputs</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/TestBench/uut/S_directional_1/counter_pwm" type="array">
+         <obj_property name="ElementShortName">counter_pwm[8:0]</obj_property>
+         <obj_property name="ObjectShortName">counter_pwm[8:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/S_directional_1/o_servo_output" type="logic">
+         <obj_property name="ElementShortName">o_servo_output</obj_property>
+         <obj_property name="ObjectShortName">o_servo_output</obj_property>
+         <obj_property name="CustomSignalColor">#D2691E</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/S_directional_2/counter_pwm" type="array">
+         <obj_property name="ElementShortName">counter_pwm[8:0]</obj_property>
+         <obj_property name="ObjectShortName">counter_pwm[8:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/S_directional_2/o_servo_output" type="logic">
+         <obj_property name="ElementShortName">o_servo_output</obj_property>
+         <obj_property name="ObjectShortName">o_servo_output</obj_property>
+         <obj_property name="CustomSignalColor">#D2691E</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/S_directional_3/counter_pwm" type="array">
+         <obj_property name="ElementShortName">counter_pwm[8:0]</obj_property>
+         <obj_property name="ObjectShortName">counter_pwm[8:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/S_directional_3/o_servo_output" type="logic">
+         <obj_property name="ElementShortName">o_servo_output</obj_property>
+         <obj_property name="ObjectShortName">o_servo_output</obj_property>
+         <obj_property name="CustomSignalColor">#D2691E</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/S_directional_4/counter_pwm" type="array">
+         <obj_property name="ElementShortName">counter_pwm[8:0]</obj_property>
+         <obj_property name="ObjectShortName">counter_pwm[8:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/S_directional_4/o_servo_output" type="logic">
+         <obj_property name="ElementShortName">o_servo_output</obj_property>
+         <obj_property name="ObjectShortName">o_servo_output</obj_property>
+         <obj_property name="CustomSignalColor">#D2691E</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/S_gripping_1/counter_pwm" type="array">
+         <obj_property name="ElementShortName">counter_pwm[8:0]</obj_property>
+         <obj_property name="ObjectShortName">counter_pwm[8:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/S_gripping_1/o_servo_output" type="logic">
+         <obj_property name="ElementShortName">o_servo_output</obj_property>
+         <obj_property name="ObjectShortName">o_servo_output</obj_property>
+         <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/S_gripping_2/counter_pwm" type="array">
+         <obj_property name="ElementShortName">counter_pwm[8:0]</obj_property>
+         <obj_property name="ObjectShortName">counter_pwm[8:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/S_gripping_2/o_servo_output" type="logic">
+         <obj_property name="ElementShortName">o_servo_output</obj_property>
+         <obj_property name="ObjectShortName">o_servo_output</obj_property>
+         <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/S_gripping_3/counter_pwm" type="array">
+         <obj_property name="ElementShortName">counter_pwm[8:0]</obj_property>
+         <obj_property name="ObjectShortName">counter_pwm[8:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/S_gripping_3/o_servo_output" type="logic">
+         <obj_property name="ElementShortName">o_servo_output</obj_property>
+         <obj_property name="ObjectShortName">o_servo_output</obj_property>
+         <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/S_gripping_4/counter_pwm" type="array">
+         <obj_property name="ElementShortName">counter_pwm[8:0]</obj_property>
+         <obj_property name="ObjectShortName">counter_pwm[8:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/S_gripping_4/o_servo_output" type="logic">
+         <obj_property name="ElementShortName">o_servo_output</obj_property>
+         <obj_property name="ObjectShortName">o_servo_output</obj_property>
+         <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group86" type="group">
+      <obj_property name="label">user_control_inputs</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+   </wvobject>
+   <wvobject fp_name="/TestBench/uut/M4/current_state" type="array">
+      <obj_property name="ElementShortName">current_state[4:0]</obj_property>
+      <obj_property name="ObjectShortName">current_state[4:0]</obj_property>
+      <obj_property name="Radix">BINARYRADIX</obj_property>
+      <obj_property name="CustomSignalColor">#FF0080</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/TestBench/uut/M4/scanner_done" type="logic">
+      <obj_property name="ElementShortName">scanner_done</obj_property>
+      <obj_property name="ObjectShortName">scanner_done</obj_property>
+   </wvobject>
+   <wvobject fp_name="/TestBench/uut/M4/leftRow" type="logic">
+      <obj_property name="ElementShortName">leftRow</obj_property>
+      <obj_property name="ObjectShortName">leftRow</obj_property>
+      <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/TestBench/uut/M4/rightRow" type="logic">
+      <obj_property name="ElementShortName">rightRow</obj_property>
+      <obj_property name="ObjectShortName">rightRow</obj_property>
+      <obj_property name="CustomSignalColor">#E0FFFF</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/TestBench/uut/M4/bottomRow" type="logic">
+      <obj_property name="ElementShortName">bottomRow</obj_property>
+      <obj_property name="ObjectShortName">bottomRow</obj_property>
+      <obj_property name="CustomSignalColor">#808080</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="group51" type="group">
+      <obj_property name="label">user_keys</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/TestBench/uut/M4/key" type="logic">
+         <obj_property name="ElementShortName">key</obj_property>
+         <obj_property name="ObjectShortName">key</obj_property>
+         <obj_property name="CustomSignalColor">#FAAFBE</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/M4/key1" type="logic">
+         <obj_property name="ElementShortName">key1</obj_property>
+         <obj_property name="ObjectShortName">key1</obj_property>
+         <obj_property name="CustomSignalColor">#FAAFBE</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/M4/key2" type="logic">
+         <obj_property name="ElementShortName">key2</obj_property>
+         <obj_property name="ObjectShortName">key2</obj_property>
+         <obj_property name="CustomSignalColor">#FAAFBE</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/M4/key3" type="logic">
+         <obj_property name="ElementShortName">key3</obj_property>
+         <obj_property name="ObjectShortName">key3</obj_property>
+         <obj_property name="CustomSignalColor">#FAAFBE</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/M4/key4" type="logic">
+         <obj_property name="ElementShortName">key4</obj_property>
+         <obj_property name="ObjectShortName">key4</obj_property>
+         <obj_property name="CustomSignalColor">#FAAFBE</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/M4/key5" type="logic">
+         <obj_property name="ElementShortName">key5</obj_property>
+         <obj_property name="ObjectShortName">key5</obj_property>
+         <obj_property name="CustomSignalColor">#FAAFBE</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/M4/key6" type="logic">
+         <obj_property name="ElementShortName">key6</obj_property>
+         <obj_property name="ObjectShortName">key6</obj_property>
+         <obj_property name="CustomSignalColor">#FAAFBE</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/M4/key7" type="logic">
+         <obj_property name="ElementShortName">key7</obj_property>
+         <obj_property name="ObjectShortName">key7</obj_property>
+         <obj_property name="CustomSignalColor">#FAAFBE</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/M4/key8" type="logic">
+         <obj_property name="ElementShortName">key8</obj_property>
+         <obj_property name="ObjectShortName">key8</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group63" type="group">
+      <obj_property name="label">user_movement done(s)</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/TestBench/uut/M4/direction1_movement_done_controller" type="logic">
+         <obj_property name="ElementShortName">direction1_movement_done_controller</obj_property>
+         <obj_property name="ObjectShortName">direction1_movement_done_controller</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/M4/direction2_movement_done_controller" type="logic">
+         <obj_property name="ElementShortName">direction2_movement_done_controller</obj_property>
+         <obj_property name="ObjectShortName">direction2_movement_done_controller</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/M4/direction3_movement_done_controller" type="logic">
+         <obj_property name="ElementShortName">direction3_movement_done_controller</obj_property>
+         <obj_property name="ObjectShortName">direction3_movement_done_controller</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/M4/gripping1_movement_done_controller" type="logic">
+         <obj_property name="ElementShortName">gripping1_movement_done_controller</obj_property>
+         <obj_property name="ObjectShortName">gripping1_movement_done_controller</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/M4/gripping2_movement_done_controller" type="logic">
+         <obj_property name="ElementShortName">gripping2_movement_done_controller</obj_property>
+         <obj_property name="ObjectShortName">gripping2_movement_done_controller</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TestBench/uut/M4/gripping3_movement_done_controller" type="logic">
+         <obj_property name="ElementShortName">gripping3_movement_done_controller</obj_property>
+         <obj_property name="ObjectShortName">gripping3_movement_done_controller</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>
