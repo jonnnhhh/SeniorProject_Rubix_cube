@@ -16,161 +16,194 @@
 // Revision:
 // Revision 0.01 - File Created
 //////////////////////////////////////////////////////////////////////////////////
-module scanner
+module scanner #(parameter MOTOR_CLOCK_FREQUENCY = 2000)
 (
-    input I_sys_clk,//125Mhz
-    input I_rst_button,
-    input I_start_button,
-    input direction1_movement_done,
-    input direction2_movement_done,
-    input direction3_movement_done,
-    input gripping1_movement_done,
-    input gripping2_movement_done,
-    input gripping3_movement_done,
+    input       I_sys_clk,//125Mhz
+    input       I_rst_button,
+    input       I_start_button,
+    input       direction1_movement_done,
+    input       direction2_movement_done,
+    input       direction3_movement_done,
+    input       gripping1_movement_done,
+    input       gripping2_movement_done,
+    input       gripping3_movement_done,
 
-    output reg o_servo1_directional,
-    output reg o_servo2_directional,
-    output reg o_servo3_directional,
-    output reg o_servo1_gripping,
-    output reg o_servo2_gripping,
-    output reg o_servo3_gripping,
-    output     o_motor_clk,
-    output reg scanner_clk_posedge_detector,
-    output reg scanner_done
+    output      o_motor_clk,
+    output reg  clk_posedge_detector,
+    output reg  scanner_done,
+    output reg  gripper1_orientation_indicator     = 0,
+    output reg  gripper2_orientation_indicator     = 0,
+    output reg  gripper3_orientation_indicator     = 0,
+    output reg  directional1_orientation_indicator = 0,
+    output reg  directional2_orientation_indicator = 0,
+    output reg  directional3_orientation_indicator = 0,
+    output reg  o_servo1_directional               = 0,
+    output reg  o_servo2_directional               = 0,
+    output reg  o_servo3_directional               = 0,
+    output reg  o_servo1_gripping                  = 0,
+    output reg  o_servo2_gripping                  = 0,
+    output reg  o_servo3_gripping                  = 0
 );
 
 //----------------------------------------------------
 
-parameter SCANNING_IDLE               = 8'b00000001;
-parameter SCANNING_CUBE_1ST_FACE      = 8'b00000010;
-parameter SCANNING_CUBE_2ND_FACE      = 8'b00000100;
-parameter SCANNING_CUBE_3RD_FACE      = 8'b00001000;
-parameter SCANNING_CUBE_4TH_FACE      = 8'b00010000;
-parameter SCANNING_CUBE_5TH_FACE      = 8'b00100000;
-parameter SCANNING_CUBE_6TH_FACE      = 8'b01000000;
-parameter SCANNING_DONE               = 8'b10000000;
+parameter COUNT_LIMIT                   = (125_000_000/(2*MOTOR_CLOCK_FREQUENCY))-1;
+parameter SCANNING_IDLE                 = 8'b00000001;
+parameter SCANNING_CUBE_1ST_FACE        = 8'b00000010;
+parameter SCANNING_CUBE_2ND_FACE        = 8'b00000100;
+parameter SCANNING_CUBE_3RD_FACE        = 8'b00001000;
+parameter SCANNING_CUBE_4TH_FACE        = 8'b00010000;
+parameter SCANNING_CUBE_5TH_FACE        = 8'b00100000;
+parameter SCANNING_CUBE_6TH_FACE        = 8'b01000000;
+parameter SCANNING_DONE                 = 8'b10000000;
 
 //----------------------------------------------------
-reg [7:0] cube_current_position; //mem holder
-reg [7:0] cube_new_position;
+
+reg [$clog2(COUNT_LIMIT) - 1:0] counter     = 0;
+reg                             clk_divider = 0;
+
+reg [12:0] key;
+reg [12:0] key_next;
+reg [7:0]  cube_current_position;
+reg [7:0]  cube_new_position;
+reg        I_scanner_clk_sync;
+reg        direction1_movement_done_reg;
+reg        scanner_done_combinational;
+
 reg       o_servo1_gripping_next;
 reg       o_servo2_gripping_next;
 reg       o_servo3_gripping_next;
 reg       o_servo1_directional_next;
 reg       o_servo2_directional_next;
 reg       o_servo3_directional_next;
-reg       key,key1,key2,key3,key4,key5,key6,key7,key8,key9,key10,key11,key12;
-reg       key_next,key1_next,key2_next,key3_next,key4_next,key5_next,
-          key6_next,key7_next,key8_next,key9_next,key10_next,key11_next,key12_next;
+reg       gripper1_orientation_indicator_next;
+reg       gripper2_orientation_indicator_next;
+reg       gripper3_orientation_indicator_next;
+reg       directional1_orientation_indicator_next;
+reg       directional2_orientation_indicator_next;
+reg       directional3_orientation_indicator_next;
 
-reg [14:0] count_limit        = 62; //1249999; //50hz
-reg [14:0] counter            = 0;
-reg        I_scanner_clk      = 0;
-reg        I_scanner_clk_sync;
-reg        direction1_movement_done_reg;
-reg        scanner_done_combinational;
-
-//----------------------------------------------------    
-always@(posedge I_sys_clk) //clk divider logic 50hz
+//----------------------------------------------------
+always@(posedge I_sys_clk) //clk divider logic 2khz
 begin
-    counter                      <= counter+1;
-    I_scanner_clk_sync           <= I_scanner_clk;
-    scanner_clk_posedge_detector <= (I_scanner_clk == 1 && I_scanner_clk_sync == 0);
+    counter                 <= counter + 1;
+    I_scanner_clk_sync      <= clk_divider;
+    clk_posedge_detector    <= (clk_divider == 1 && I_scanner_clk_sync == 0);
 
-        if(counter == count_limit)
+        if(counter == COUNT_LIMIT)
         begin
 
-            I_scanner_clk <=~I_scanner_clk;
-            counter       <=0;
+            clk_divider     <=  ~clk_divider;
+            counter         <=  0;
 
         end
 end
 //----------------------------------------------------
-assign  o_motor_clk = I_scanner_clk;
-//----------------------------------------------------  
+
+assign  o_motor_clk = clk_divider;
+
+//---------------------Sequential Logic----------------------------------------------
 always@(posedge I_sys_clk or posedge I_rst_button)
 begin
     if(I_rst_button)
     begin
-        cube_current_position <= SCANNING_IDLE;
-        o_servo1_gripping     <= 0;
-        o_servo2_gripping     <= 0;
-        o_servo3_gripping     <= 0;
-        o_servo1_directional  <= 0;
-        o_servo2_directional  <= 0;
-        o_servo3_directional  <= 0;
-        key                   <= 0;
-        key1                  <= 0;
-        key2                  <= 0;
-        key3                  <= 0;
-        key4                  <= 0;
-        key5                  <= 0;
-        key6                  <= 0;
-        key7                  <= 0;
-        key8                  <= 0;
-        key9                  <= 0;
-        key10                 <= 0;
-        key11                 <= 0;
-        key12                 <= 0;
-        scanner_done          <= 1;
-    
+        cube_current_position              <= SCANNING_IDLE;
+        o_servo1_gripping                  <= 0;
+        o_servo2_gripping                  <= 0;
+        o_servo3_gripping                  <= 0;
+        o_servo1_directional               <= 0;
+        o_servo2_directional               <= 0;
+        o_servo3_directional               <= 0;
+        gripper1_orientation_indicator     <= 0;//0 = initially closed
+        gripper2_orientation_indicator     <= 0;//0 = initially closed
+        gripper3_orientation_indicator     <= 0;//0 = initially opened
+        directional1_orientation_indicator <= 0;
+        directional2_orientation_indicator <= 0;
+        directional3_orientation_indicator <= 0;
+        key[0]                             <= 0;
+        key[1]                             <= 0;
+        key[2]                             <= 0;
+        key[3]                             <= 0;
+        key[4]                             <= 0;
+        key[5]                             <= 0;
+        key[6]                             <= 0;
+        key[7]                             <= 0;
+        key[8]                             <= 0;
+        key[9]                             <= 0;
+        key[10]                            <= 0;
+        key[11]                            <= 0;
+        key[12]                            <= 0;
+        scanner_done                       <= 1;
+
     end
     else
-    begin 
-        cube_current_position <= cube_new_position;
-        o_servo1_gripping     <= o_servo1_gripping_next;
-        o_servo2_gripping     <= o_servo2_gripping_next;
-        o_servo3_gripping     <= o_servo3_gripping_next;
-        o_servo1_directional  <= o_servo1_directional_next;
-        o_servo2_directional  <= o_servo2_directional_next;
-        o_servo3_directional  <= o_servo3_directional_next;
-        key                   <= key_next;
-        key1                  <= key1_next;
-        key2                  <= key2_next;
-        key3                  <= key3_next;
-        key4                  <= key4_next;
-        key5                  <= key5_next;
-        key6                  <= key6_next;
-        key7                  <= key7_next;
-        key8                  <= key8_next;
-        key9                  <= key9_next;
-        key10                 <= key10_next;
-        key11                 <= key11_next;
-        key12                 <= key12_next;
-        scanner_done          <= scanner_done_combinational;
+    begin
+        cube_current_position              <= cube_new_position;
+        o_servo1_gripping                  <= o_servo1_gripping_next;
+        o_servo2_gripping                  <= o_servo2_gripping_next;
+        o_servo3_gripping                  <= o_servo3_gripping_next;
+        o_servo1_directional               <= o_servo1_directional_next;
+        o_servo2_directional               <= o_servo2_directional_next;
+        o_servo3_directional               <= o_servo3_directional_next;
+        gripper1_orientation_indicator     <= gripper1_orientation_indicator_next;
+        gripper2_orientation_indicator     <= gripper2_orientation_indicator_next;
+        gripper3_orientation_indicator     <= gripper3_orientation_indicator_next;
+        directional1_orientation_indicator <= directional1_orientation_indicator_next;
+        directional2_orientation_indicator <= directional2_orientation_indicator_next;
+        directional3_orientation_indicator <= directional3_orientation_indicator_next;
+        key[0]                             <= key_next[0];
+        key[1]                             <= key_next[1];
+        key[2]                             <= key_next[2];
+        key[3]                             <= key_next[3];
+        key[4]                             <= key_next[4];
+        key[5]                             <= key_next[5];
+        key[6]                             <= key_next[6];
+        key[7]                             <= key_next[7];
+        key[8]                             <= key_next[8];
+        key[9]                             <= key_next[9];
+        key[10]                            <= key_next[10];
+        key[11]                            <= key_next[11];
+        key[12]                            <= key_next[12];
+        scanner_done                       <= scanner_done_combinational;
+
     end
-end 
-//----------------------------------------------------    
-//vertical scanning
+end
+
+//-------------------------Combinatorial Logic--------------------------------------------
 always@(*)
 begin
-    cube_new_position          = cube_current_position;
-    o_servo1_gripping_next     = o_servo1_gripping;
-    o_servo2_gripping_next     = o_servo2_gripping;
-    o_servo3_gripping_next     = o_servo3_gripping;
-    o_servo1_directional_next  = o_servo1_directional;
-    o_servo2_directional_next  = o_servo2_directional;
-    o_servo3_directional_next  = o_servo3_directional;
-    key_next                   = key;
-    key1_next                  = key1;
-    key2_next                  = key2;
-    key3_next                  = key3;
-    key4_next                  = key4;
-    key5_next                  = key5;
-    key6_next                  = key6;
-    key7_next                  = key7;
-    key8_next                  = key8;
-    key9_next                  = key9;
-    key10_next                 = key10;
-    key11_next                 = key11;
-    key12_next                 = key12;
-    scanner_done_combinational = scanner_done;
+    cube_new_position                       = cube_current_position;
+    o_servo1_gripping_next                  = o_servo1_gripping;
+    o_servo2_gripping_next                  = o_servo2_gripping;
+    o_servo3_gripping_next                  = o_servo3_gripping;
+    o_servo1_directional_next               = o_servo1_directional;
+    o_servo2_directional_next               = o_servo2_directional;
+    o_servo3_directional_next               = o_servo3_directional;
+    gripper1_orientation_indicator_next     = gripper1_orientation_indicator;
+    gripper2_orientation_indicator_next     = gripper2_orientation_indicator;
+    gripper3_orientation_indicator_next     = gripper3_orientation_indicator;
+    directional1_orientation_indicator_next = directional1_orientation_indicator;
+    directional2_orientation_indicator_next = directional2_orientation_indicator;
+    directional3_orientation_indicator_next = directional3_orientation_indicator;
+    scanner_done_combinational              = scanner_done;
+    key_next[0]                             = key[0];
+    key_next[1]                             = key[1];
+    key_next[2]                             = key[2];
+    key_next[3]                             = key[3];
+    key_next[4]                             = key[4];
+    key_next[5]                             = key[5];
+    key_next[6]                             = key[6];
+    key_next[7]                             = key[7];
+    key_next[8]                             = key[8];
+    key_next[9]                             = key[9];
+    key_next[10]                            = key[10];
+    key_next[11]                            = key[11];
+    key_next[12]                            = key[12];
+
+    case(cube_current_position)
     //----------------------------------------------------
-        case(cube_current_position)
     SCANNING_IDLE: //00000001
     begin
-        if(scanner_clk_posedge_detector == 1)
-        begin
 
            if(I_start_button == 1)
            begin
@@ -187,78 +220,84 @@ begin
 
            end
 
-        end
     end
     //----------------------------------------------------
     SCANNING_CUBE_1ST_FACE: //00000010
     begin
-        if(scanner_clk_posedge_detector == 1)
+        if(clk_posedge_detector == 1)
         begin
-             o_servo1_gripping_next    = 0; //currently closed @180
-             o_servo2_gripping_next    = 0; //currently closed @180
-             o_servo3_gripping_next    = 0; ////currently open @180
-             cube_new_position         = SCANNING_CUBE_2ND_FACE;
-             o_servo3_directional_next = 0;
-             o_servo1_gripping_next    = 0;
-             o_servo2_gripping_next    = 0;
-             o_servo3_gripping_next    = 0;
-             key_next                  = 1;
-             o_servo1_directional_next = 1; //90 degrees left, closed @90
-             o_servo2_directional_next = 1; //90 degrees right, closed @90
+
+             o_servo1_gripping_next                  = 0; //currently closed @180
+             o_servo2_gripping_next                  = 0; //currently closed @180
+             o_servo3_gripping_next                  = 0; //currently open @180
+
+             cube_new_position                       = SCANNING_CUBE_2ND_FACE;
+             key_next[0]                             = 1;
+             o_servo1_directional_next               = 1; //90 degrees left, closed @90
+             o_servo2_directional_next               = 1; //90 degrees right, closed @90
+             directional1_orientation_indicator_next = 1;
+             directional2_orientation_indicator_next = 1;
 
         end
     end
     //----------------------------------------------------
     SCANNING_CUBE_2ND_FACE: //00000100
     begin
-        if(scanner_clk_posedge_detector == 1)
+        if(clk_posedge_detector == 1)
         begin
 
-            if(direction1_movement_done == 1 & key == 1)
+            if(direction1_movement_done == 1 & key[0] == 1)
             begin
 
-                key_next                  = 0;
-                key1_next                 = 1;
-                o_servo1_directional_next = 0;
-                o_servo2_directional_next = 0;
-                o_servo3_gripping_next    = 1;//closed @180
+                key_next[0]                         = 0;
+                key_next[1]                         = 1;
+                o_servo1_directional_next           = 0;
+                o_servo2_directional_next           = 0;
+                o_servo3_gripping_next              = 1;//closed @180
+                gripper3_orientation_indicator_next = 1;
 
             end
 
-            if(gripping3_movement_done == 1 & key1 == 1)
+            if(gripping3_movement_done == 1 & key[1] == 1)
             begin
 
-                key1_next              = 0;
-                key2_next              = 1;
-                o_servo1_gripping_next = 1; //now opened @90
-                o_servo2_gripping_next = 1; //now opened @90
-                o_servo3_gripping_next = 0;
+                key_next[1]                         = 0;
+                key_next[2]                         = 1;
+                o_servo1_gripping_next              = 1; //now opened @90
+                gripper1_orientation_indicator_next = 1;
+                o_servo2_gripping_next              = 1; //now opened @90
+                gripper2_orientation_indicator_next = 1;
+                o_servo3_gripping_next              = 0;
 
             end
 
-            if(gripping1_movement_done == 1 && gripping2_movement_done == 1 && key2 == 1)
+            if(gripping1_movement_done == 1 && gripping2_movement_done == 1 && key[2] == 1)
             begin
 
-                key2_next                 = 0;
-                o_servo1_gripping_next    = 0;
-                o_servo2_gripping_next    = 0;
-                o_servo1_directional_next = 1; //90 degrees left, opened @180
-                o_servo2_directional_next = 1; //90 degrees right, opened @180
-                key3_next                 = 1;
+                key_next[2]                             = 0;
+                o_servo1_gripping_next                  = 0;
+                o_servo2_gripping_next                  = 0;
+                o_servo1_directional_next               = 1; //90 degrees left, opened @180
+                directional1_orientation_indicator_next = 0;
+                o_servo2_directional_next               = 1; //90 degrees right, opened @180
+                directional2_orientation_indicator_next = 0;
+                key_next[3]                             = 1;
 
             end
 
-            if(direction1_movement_done == 1 && gripping3_movement_done == 1 && key3 == 1 )
+            if(direction1_movement_done == 1 && gripping3_movement_done == 1 && key[3] == 1 )
             begin
 
-                key3_next                 = 0;
-                o_servo1_directional_next = 0;
-                o_servo2_directional_next = 0;
-                o_servo3_gripping_next    = 0;
-                cube_new_position         = SCANNING_CUBE_3RD_FACE;
-                o_servo1_gripping_next    = 1; //closed @180
-                o_servo2_gripping_next    = 1; //closed @180
-                key12_next                = 1;
+                key_next[3]                         = 0;
+                o_servo1_directional_next           = 0;
+                o_servo2_directional_next           = 0;
+                o_servo3_gripping_next              = 0;
+                cube_new_position                   = SCANNING_CUBE_3RD_FACE;
+                o_servo1_gripping_next              = 1; //closed @180
+                gripper1_orientation_indicator_next = 0;
+                o_servo2_gripping_next              = 1; //closed @180
+                gripper2_orientation_indicator_next = 0;
+                key_next[12]                        = 1;
 
             end
         end
@@ -266,123 +305,133 @@ begin
     //----------------------------------------------------
     SCANNING_CUBE_3RD_FACE: //00001000
     begin
-        if(scanner_clk_posedge_detector == 1)
+        if(clk_posedge_detector == 1)
         begin
 
-            if(key12 == 1)
+            if(key[12] == 1)
             begin
 
-                key12_next           = 0;
-                key2_next            = 1;
+                key_next[12]           = 0;
+                key_next[2]            = 1;
 
             end
 
-             if(gripping1_movement_done == 1 && key2 == 1)
+             if(gripping1_movement_done == 1 && key[2] == 1)
              begin
 
-                key2_next              = 0;
-                o_servo1_gripping_next = 0;
-                o_servo2_gripping_next = 0;
-                o_servo3_gripping_next = 1;//opened @180
-                key1_next              = 1;
+                key_next[2]                         = 0;
+                o_servo1_gripping_next              = 0;
+                o_servo2_gripping_next              = 0;
+                o_servo3_gripping_next              = 1;//opened @180
+                gripper3_orientation_indicator_next = 0;
+                key_next[1]                         = 1;
 
              end
 
-             if(key1 == 1)
+             if(key[1] == 1)
              begin
 
-                key1_next = 0;
-                key_next  = 1;
+                key_next[1] = 0;
+                key_next[0] = 1;
 
              end
 
-             if(gripping3_movement_done == 1 && key == 1)
+             if(gripping3_movement_done == 1 && key[0] == 1)
              begin
 
-                o_servo3_gripping_next    = 0;
-                o_servo1_directional_next = 1; //90 degrees left, closed @90
-                o_servo2_directional_next = 1; //90 degrees right, closed @90
-                key10_next                = 1;
-                key_next                  = 0;
+                o_servo3_gripping_next                  = 0;
+                o_servo1_directional_next               = 1; //90 degrees left, closed @90
+                directional1_orientation_indicator_next = 1;
+                o_servo2_directional_next               = 1; //90 degrees right, closed @90
+                directional2_orientation_indicator_next = 1;
+                key_next[10]                            = 1;
+                key_next[0]                             = 0;
 
              end
 
-             if(key10 == 1)
+             if(key[10] == 1)
              begin
 
-                key10_next = 0;
-                key11_next = 1;
+                key_next[10] = 0;
+                key_next[11] = 1;
 
              end
 
-             if(direction1_movement_done == 1 && key11 == 1)
+             if(direction1_movement_done == 1 && key[11] == 1)
              begin
 
-                o_servo3_gripping_next    = 1;//closed @180
-                o_servo1_directional_next = 0;
-                o_servo2_directional_next = 0;
-                key11_next                = 0;
-                key3_next                 = 1;
+                o_servo3_gripping_next              = 1;//closed @180
+                gripper3_orientation_indicator_next = 1;
+                o_servo1_directional_next           = 0;
+                o_servo2_directional_next           = 0;
+                key_next[11]                        = 0;
+                key_next[3]                         = 1;
 
              end
 
-             if(key3 == 1)
+             if(key[3] == 1)
              begin
 
-                key3_next = 0;
-                key4_next = 1;
+                key_next[3] = 0;
+                key_next[4] = 1;
 
              end
 
-             if(gripping3_movement_done == 1 && key4 == 1)
+             if(gripping3_movement_done == 1 && key[4] == 1)
              begin
 
-                o_servo1_gripping_next = 1; //opened @90
-                o_servo2_gripping_next = 1; //opened @90
-                o_servo3_gripping_next = 0;
-                key4_next              = 0;
-                key5_next              = 1;
+                o_servo1_gripping_next              = 1; //opened @90
+                gripper1_orientation_indicator_next = 1;
+                o_servo2_gripping_next              = 1; //opened @90
+                gripper2_orientation_indicator_next = 1;
+                o_servo3_gripping_next              = 0;
+                key_next[4]                         = 0;
+                key_next[5]                         = 1;
 
              end
 
-            if(key5 == 1)
+            if(key[5] == 1)
              begin
 
-                key5_next = 0;
-                key6_next = 1;
+                key_next[5] = 0;
+                key_next[6] = 1;
 
              end
 
-             if(gripping1_movement_done == 1 && key6 == 1)
+             if(gripping1_movement_done == 1 && key[6] == 1)
              begin
 
-                o_servo1_gripping_next    = 0;
-                o_servo2_gripping_next    = 0;
-                o_servo1_directional_next = 1;
-                o_servo2_directional_next = 1;
-                key6_next                 = 0;
-                key7_next                 = 1;
+                o_servo1_gripping_next                  = 0;
+                o_servo2_gripping_next                  = 0;
+                o_servo1_directional_next               = 1;
+                directional1_orientation_indicator_next = 0;
+                o_servo2_directional_next               = 1;
+                directional2_orientation_indicator_next = 0;
+                key_next[6]                             = 0;
+                key_next[7]                             = 1;
 
              end
 
-             if(key7 == 1)
+             if(key[7] == 1)
              begin
 
-                key7_next = 0;
-                key8_next = 1;
+                key_next[7] = 0;
+                key_next[8] = 1;
 
              end
 
-             if(direction1_movement_done == 1 && key8 == 1)
+             if(direction1_movement_done == 1 && key[8] == 1)
              begin
 
-                key8_next                 = 0;
-                o_servo1_directional_next = 0;
-                o_servo2_directional_next = 0;
-                cube_new_position         = SCANNING_CUBE_4TH_FACE;
-                o_servo1_gripping_next    = 1; //closed @180
-                o_servo2_gripping_next    = 1; //closed @180
-                key9_next                 = 1;
+                key_next[8]                         = 0;
+                o_servo1_directional_next           = 0;
+                o_servo2_directional_next           = 0;
+                cube_new_position                   = SCANNING_CUBE_4TH_FACE;
+                o_servo1_gripping_next              = 1; //closed @180
+                gripper1_orientation_indicator_next = 0;
+                o_servo2_gripping_next              = 1; //closed @180
+                gripper2_orientation_indicator_next = 0;
+                key_next[9]                         = 1;
 
              end
 
@@ -391,122 +440,131 @@ begin
     //----------------------------------------------------
     SCANNING_CUBE_4TH_FACE: //00010000
     begin
-        if(scanner_clk_posedge_detector == 1)
+        if(clk_posedge_detector == 1)
         begin
 
-            if(key9 == 1)
+            if(key[9] == 1)
             begin
 
-                key9_next = 0;
-                key2_next = 1;
+                key_next[9] = 0;
+                key_next[2] = 1;
 
             end
 
-             if(gripping1_movement_done == 1 && key2 == 1)
+             if(gripping1_movement_done == 1 && key[2] == 1)
              begin
 
-                key2_next              = 0;
-                o_servo1_gripping_next = 0;
-                o_servo2_gripping_next = 0;
-                o_servo3_gripping_next = 1;//opened @180
-                key1_next              = 1;
+                key_next[2]                         = 0;
+                o_servo1_gripping_next              = 0;
+                o_servo2_gripping_next              = 0;
+                o_servo3_gripping_next              = 1;//opened @180
+                gripper3_orientation_indicator_next = 0;
+                key_next[1]                         = 1;
 
              end
 
-             if(key1 == 1)
+             if(key[1] == 1)
              begin
 
-                key1_next = 0;
-                key_next = 1;
+                key_next[1] = 0;
+                key_next[0] = 1;
 
              end
 
-             if(gripping3_movement_done == 1 && key == 1)
+             if(gripping3_movement_done == 1 && key[0] == 1)
              begin
 
-                o_servo3_gripping_next    = 0;
-                o_servo1_directional_next = 1; //90 degrees left, closed @90
-                o_servo2_directional_next = 1; //90 degrees right, closed @90
-                key12_next                = 1;
-                key_next                  = 0;
+                o_servo3_gripping_next                  = 0;
+                o_servo1_directional_next               = 1; //90 degrees left, closed @90
+                directional1_orientation_indicator_next = 1;
+                o_servo2_directional_next               = 1; //90 degrees right, closed @90
+                directional2_orientation_indicator_next = 1;
+                key_next[12]                            = 1;
+                key_next[0]                             = 0;
 
              end
 
-             if(key12 == 1)
+             if(key[12] == 1)
              begin
 
-                key12_next  = 0;
-                key11_next  = 1;
+                key_next[12]  = 0;
+                key_next[11]  = 1;
 
              end
 
-             if(direction1_movement_done == 1 && key11 == 1)
+             if(direction1_movement_done == 1 && key[11] == 1)
              begin
 
-                o_servo3_gripping_next    = 1;//closed @180
-                o_servo1_directional_next = 0;
-                o_servo2_directional_next = 0;
-                key11_next                = 0;
-                key3_next                 = 1;
+                o_servo3_gripping_next              = 1;//closed @180
+                gripper3_orientation_indicator_next = 1;
+                o_servo1_directional_next           = 0;
+                o_servo2_directional_next           = 0;
+                key_next[11]                        = 0;
+                key_next[3]                         = 1;
 
              end
 
-             if(key3 == 1)
+             if(key[3] == 1)
              begin
 
-                key3_next = 0;
-                key4_next = 1;
+                key_next[3] = 0;
+                key_next[4] = 1;
 
              end
 
-             if(gripping3_movement_done == 1 && key4 == 1)
+             if(gripping3_movement_done == 1 && key[4] == 1)
              begin
 
-                o_servo1_gripping_next = 1; //opened @90
-                o_servo2_gripping_next = 1; //opened @90
-                o_servo3_gripping_next = 0;
-                key4_next              = 0;
-                key5_next              = 1;
+                o_servo1_gripping_next              = 1; //opened @90
+                gripper1_orientation_indicator_next = 1;
+                o_servo2_gripping_next              = 1; //opened @90
+                gripper2_orientation_indicator_next = 1;
+                o_servo3_gripping_next              = 0;
+                key_next[4]                         = 0;
+                key_next[5]                         = 1;
 
              end
 
-            if(key5 == 1)
+            if(key[5] == 1)
              begin
 
-                key5_next = 0;
-                key6_next = 1;
+                key_next[5] = 0;
+                key_next[6] = 1;
 
              end
 
-             if(gripping1_movement_done == 1 && key6 == 1)
+             if(gripping1_movement_done == 1 && key[6] == 1)
              begin
 
-                o_servo1_gripping_next    = 0;
-                o_servo2_gripping_next    = 0;
-                o_servo1_directional_next = 1;
-                o_servo2_directional_next = 1;
-                key6_next                 = 0;
-                key7_next                 = 1;
+                o_servo1_gripping_next                  = 0;
+                o_servo2_gripping_next                  = 0;
+                o_servo1_directional_next               = 1;
+                directional1_orientation_indicator_next = 0;
+                o_servo2_directional_next               = 1;
+                directional2_orientation_indicator_next = 0;
+                key_next[6]                             = 0;
+                key_next[7]                             = 1;
 
              end
 
-             if(key7 == 1)
+             if(key[7] == 1)
              begin
 
-                key7_next = 0;
-                key8_next = 1;
+                key_next[7] = 0;
+                key_next[8] = 1;
 
              end
 
-             if(direction1_movement_done == 1 && key8 == 1)
+             if(direction1_movement_done == 1 && key[8] == 1)
              begin
 
-                key8_next                 = 0;
-                o_servo1_directional_next = 0;
-                o_servo2_directional_next = 0;
-                cube_new_position         = SCANNING_CUBE_5TH_FACE;
-                key1_next                 = 1;
-                o_servo3_directional_next = 1; // 90 degrees right, closed at @90
+                key_next[8]                             = 0;
+                o_servo1_directional_next               = 0;
+                o_servo2_directional_next               = 0;
+                cube_new_position                       = SCANNING_CUBE_5TH_FACE;
+                key_next[1]                             = 1;
+                o_servo3_directional_next               = 1; // 90 degrees right, closed at @90
+                directional3_orientation_indicator_next = 1;
 
              end
 
@@ -516,113 +574,118 @@ begin
     //Horizontal scanning
     SCANNING_CUBE_5TH_FACE: //00100000
     begin
-        if(scanner_clk_posedge_detector == 1)
+        if(clk_posedge_detector == 1)
         begin
 
-            if(key1 == 1)
+            if(key[1] == 1)
             begin
 
-                key_next  = 1;
-                key1_next = 0;
+                key_next[0] = 1;
+                key_next[1] = 0;
 
             end
 
-            if(key == 1)
+            if(key[0] == 1)
             begin
 
-                key_next   = 0;
-                key11_next = 1;
+                key_next[0]  = 0;
+                key_next[11] = 1;
 
             end
 
-            if(key11 == 1)
+            if(key[11] == 1)
             begin
 
-                key11_next = 0;
-                key8_next  = 1;
+                key_next[11] = 0;
+                key_next[8]  = 1;
 
             end
 
-            if(direction3_movement_done == 1 && key8 == 1)
+            if(direction3_movement_done == 1 && key[8] == 1)
             begin
 
-                key8_next                 = 0;
-                o_servo3_directional_next = 0;
-                o_servo1_gripping_next    = 1; //closed @180
-                o_servo2_gripping_next    = 1; //closed @180
-                key7_next                 = 1;
+                key_next[8]                         = 0;
+                o_servo3_directional_next           = 0;
+                o_servo1_gripping_next              = 1; //closed @180
+                gripper1_orientation_indicator_next = 0;
+                o_servo2_gripping_next              = 1; //closed @180
+                gripper2_orientation_indicator_next = 0;
+                key_next[7]                         = 1;
 
             end
 
-            if(key7 == 1)
+            if(key[7] == 1)
             begin
 
-                key7_next = 0;
-                key6_next = 1;
+                key_next[7] = 0;
+                key_next[6] = 1;
 
             end
 
-            if(gripping1_movement_done == 1 && key6 == 1)
+            if(gripping1_movement_done == 1 && key[6] == 1)
             begin
 
-                o_servo1_gripping_next = 0;
-                o_servo2_gripping_next = 0;
-                o_servo3_gripping_next = 1; //opened @90 degrees
-                key6_next              = 0;
-                key5_next              = 1;
+                o_servo1_gripping_next              = 0;
+                o_servo2_gripping_next              = 0;
+                o_servo3_gripping_next              = 1; //opened @90 degrees
+                gripper3_orientation_indicator_next = 0;
+                key_next[6]                         = 0;
+                key_next[5]                         = 1;
 
             end
 
-            if(key5 == 1)
+            if(key[5] == 1)
             begin
 
-                key5_next = 0;
-                key4_next = 1;
+                key_next[5] = 0;
+                key_next[4] = 1;
 
             end
 
-            if(gripping3_movement_done == 1 && key4 == 1)
+            if(gripping3_movement_done == 1 && key[4] == 1)
             begin
 
-                o_servo3_gripping_next    = 0;
-                o_servo3_directional_next = 1; //90 degrees right, opened @180
-                key4_next                 = 0;
-                key3_next                 = 1;
+                o_servo3_gripping_next                  = 0;
+                o_servo3_directional_next               = 1; //90 degrees right, opened @180
+                directional3_orientation_indicator_next = 0;
+                key_next[4]                             = 0;
+                key_next[3]                             = 1;
 
             end
 
-            if(key3 == 1)
+            if(key[3] == 1)
             begin
 
-                key3_next = 0;
-                key9_next = 1;
+                key_next[3] = 0;
+                key_next[9] = 1;
 
             end
 
-            if(key9 == 1)
+            if(key[9] == 1)
             begin
 
-                key9_next = 0;
-                key10_next = 1;
+                key_next[9]  = 0;
+                key_next[10] = 1;
 
             end
 
-            if(key10 == 1)
+            if(key[10] == 1)
             begin
 
-                key10_next = 0;
-                key2_next = 1;
+                key_next[10] = 0;
+                key_next[2]  = 1;
 
             end
 
-            if(direction3_movement_done == 1 && key2 == 1)
+            if(direction3_movement_done == 1 && key[2] == 1)
             begin
 
-                key2_next                 = 0;
-                o_servo3_directional_next = 0;
-                cube_new_position         = SCANNING_CUBE_6TH_FACE;
-                key1_next                 = 1;
-                o_servo3_gripping_next    = 1; // closed @180 degrees
+                key_next[2]                         = 0;
+                o_servo3_directional_next           = 0;
+                cube_new_position                   = SCANNING_CUBE_6TH_FACE;
+                key_next[1]                         = 1;
+                o_servo3_gripping_next              = 1; // closed @180 degrees
+                gripper3_orientation_indicator_next = 1;
 
             end
         end
@@ -630,72 +693,77 @@ begin
     //----------------------------------------------------
     SCANNING_CUBE_6TH_FACE: //01000000
     begin
-        if(scanner_clk_posedge_detector == 1)
+        if(clk_posedge_detector == 1)
         begin
 
-            if(gripping3_movement_done == 1 && key1 == 1)
+            if(gripping3_movement_done == 1 && key[1] == 1)
             begin
 
-                key1_next              = 0;
-                o_servo3_gripping_next = 0;
-                o_servo1_gripping_next = 1; //opened @180
-                o_servo2_gripping_next = 1; //opened @180
-                key8_next              = 1;
+                key_next[1]                         = 0;
+                o_servo3_gripping_next              = 0;
+                o_servo1_gripping_next              = 1; //opened @180
+                gripper1_orientation_indicator_next = 1;
+                o_servo2_gripping_next              = 1; //opened @180
+                gripper2_orientation_indicator_next = 1;
+                key_next[8]                         = 1;
 
             end
 
-            if(key8 == 1)
+            if(key[8] == 1)
             begin
 
-                key8_next = 0;
-                key7_next = 1;
+                key_next[8] = 0;
+                key_next[7] = 1;
 
             end
 
-            if(gripping1_movement_done == 1 && key7 == 1)
+            if(gripping1_movement_done == 1 && key[7] == 1)
             begin
 
-                key7_next                 = 0;
-                o_servo1_gripping_next    = 0;
-                o_servo2_gripping_next    = 0;
-                o_servo3_directional_next = 1; //180 degrees right, closed @80 with corresponding duty cycle
-                key6_next                 = 1;
+                key_next[7]                             = 0;
+                o_servo1_gripping_next                  = 0;
+                o_servo2_gripping_next                  = 0;
+                o_servo3_directional_next               = 1; //180 degrees right, closed @80 with corresponding duty cycle
+                directional3_orientation_indicator_next = 1;
+                key_next[6]                             = 1;
 
             end
 
-            if(key6 == 1)
+            if(key[6] == 1)
             begin
 
-                key6_next = 0;
-                key9_next = 1;
+                key_next[6] = 0;
+                key_next[9] = 1;
 
             end
 
-            if(key9 == 1)
+            if(key[9] == 1)
             begin
 
-                key9_next  = 0;
-                key10_next = 1;
+                key_next[9]  = 0;
+                key_next[10] = 1;
 
             end
 
-            if(key10 == 1)
+            if(key[10] == 1)
             begin
 
-                key10_next = 0;
-                key5_next  = 1;
+                key_next[10] = 0;
+                key_next[5]  = 1;
 
             end
 
-            if(direction3_movement_done == 1 && key5 == 1)
+            if(direction3_movement_done == 1 && key[5] == 1)
             begin
 
-                o_servo3_directional_next = 0;
-                key5_next                 = 0;
-                cube_new_position         = SCANNING_DONE;
-                key6_next                 = 1;
-                o_servo1_gripping_next    = 1; //closed @180
-                o_servo2_gripping_next    = 1; //closed @180
+                o_servo3_directional_next           = 0;
+                key_next[5]                         = 0;
+                cube_new_position                   = SCANNING_DONE;
+                key_next[6]                         = 1;
+                o_servo1_gripping_next              = 1; //closed @180
+                gripper1_orientation_indicator_next = 0;
+                o_servo2_gripping_next              = 1; //closed @180
+                gripper2_orientation_indicator_next = 0;
 
             end
         end
@@ -703,50 +771,51 @@ begin
     //----------------------------------------------------
     SCANNING_DONE: //10000000
     begin
-        if(scanner_clk_posedge_detector == 1)
+        if(clk_posedge_detector == 1)
         begin
 
-            if(gripping1_movement_done == 1 && key6 == 1)
+            if(gripping1_movement_done == 1 && key[6] == 1)
             begin
 
-                o_servo1_gripping_next = 0;
-                o_servo2_gripping_next = 0;
-                o_servo3_gripping_next = 1;
-                key6_next              = 0;
-                key8_next              = 1;
+                o_servo1_gripping_next              = 0;
+                o_servo2_gripping_next              = 0;
+                o_servo3_gripping_next              = 1;
+                gripper3_orientation_indicator_next = 0;
+                key_next[6]                         = 0;
+                key_next[8]                         = 1;
 
             end
 
-            if(key8 == 1)
+            if(key[8] == 1)
             begin
 
-                key8_next = 0;
-                key9_next = 1;
+                key_next[8] = 0;
+                key_next[9] = 1;
 
             end
 
-            if(key9 == 1)
+            if(key[9] == 1)
             begin
 
-                key9_next  = 0;
-                key10_next = 1;
+                key_next[9]  = 0;
+                key_next[10] = 1;
 
             end
 
-            if(key10 == 1)
+            if(key[10] == 1)
             begin
 
-                key10_next             = 0;
-                key7_next              = 1;
-                o_servo3_gripping_next = 0;
+                key_next[10]             = 0;
+                key_next[7]              = 1;
+                o_servo3_gripping_next   = 0;
 
             end
 
-            if(key7 == 1)
+            if(key[7] == 1)
             begin
 
-                key7_next         = 0;
-                cube_new_position = SCANNING_IDLE;
+                key_next[7]         = 0;
+                cube_new_position   = SCANNING_IDLE;
 
             end
 
